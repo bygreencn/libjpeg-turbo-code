@@ -53,6 +53,7 @@ option(WITH_MEM_SRCDST "Include in-memory source/destination manager functions w
 option(WITH_TURBOJPEG "Include the TurboJPEG wrapper library and associated test programs" TRUE)
 option(WITH_JAVA "Build Java wrapper for the TurboJPEG library" FALSE)
 option(WITH_12BIT "Encode/decode JPEG images with 12-bit samples (implies WITH_SIMD=0 WITH_TURBOJPEG=0 WITH_ARITH_ENC=0 WITH_ARITH_DEC=0)" FALSE)
+option(WITH_UNICODE "Build unicode support for the TurboJPEG library at MSVC" FALSE)
 
 if(WITH_12BIT)
   set(WITH_SIMD FALSE)
@@ -128,6 +129,11 @@ if(MSVC)
   endforeach()
 
   add_definitions(-W3 -wd4996)
+  
+  if(WITH_UNICODE)
+	ADD_DEFINITIONS(/D_UNICODE /DUNICODE)
+  endif()
+  
 endif()
 
 # Detect whether compiler is 64-bit
@@ -144,6 +150,8 @@ if(64BIT)
 else()
   message(STATUS "32-bit build")
 endif()
+
+
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   if(MSVC)
@@ -424,6 +432,7 @@ foreach(libtype shared static)
     set(dir "")
     set(suffix -static)
   endif()
+  
   if(WITH_TURBOJPEG)
     add_test(tjunittest${suffix} tjunittest${suffix})
     add_test(tjunittest${suffix}-alloc tjunittest${suffix} -alloc)
